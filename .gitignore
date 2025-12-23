@@ -1,0 +1,82 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Expo
+.expo/
+.expo-shared/
+dist/
+web-build/
+
+# React Native
+.react-native/
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Editor directories and files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Electron
+video-screen-app/uploads/*
+!video-screen-app/uploads/.gitkeep
+
+# Logs
+logs/
+*.log
+
+# OS files
+Thumbs.db
+
+# Build files
+*.apk
+*.ipa
+*.app
+*.dmg
+*.exe
+
+# Android
+VideoBackgroundRemoval-main/build/
+VideoBackgroundRemoval-main/app/build/
+VideoBackgroundRemoval-main/.gradle/
+VideoBackgroundRemoval-main/local.properties
+VideoBackgroundRemoval-main/.idea/
+VideoBackgroundRemoval-main/*.iml
+
+# Native Android/iOS folders (コメントアウト: AndroidStudioで使用するため)
+# video-remote-app/android/
+# video-remote-app/ios/
+
+# ただし、ビルド成果物は除外
+video-remote-app/android/app/build/
+video-remote-app/android/.gradle/
+video-remote-app/android/local.properties
+video-remote-app/ios/Pods/
+video-remote-app/ios/build/
+
+# Gradle
+.gradle/
+build/
+
+# TensorFlow Lite models (already committed, but ignore if regenerated)
+# *.tflite
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Package manager files
+package-lock.json
+yarn.lock

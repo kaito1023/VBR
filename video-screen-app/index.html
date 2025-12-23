@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VBR - Video Screen</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    #header {
+      background: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%);
+      padding: 24px 32px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    #header.hidden {
+      opacity: 0;
+      transform: translateY(-20px);
+      pointer-events: none;
+    }
+
+    .header-title {
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 16px;
+      letter-spacing: 2px;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    }
+
+    .server-info {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+
+    .info-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .info-card:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .info-label {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 4px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .info-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      font-family: 'Courier New', monospace;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(16, 185, 129, 0.5);
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .status-indicator {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #10B981;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { 
+        opacity: 1; 
+        transform: scale(1);
+      }
+      50% { 
+        opacity: 0.6; 
+        transform: scale(1.2);
+      }
+    }
+
+    #video-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      background: #000;
+    }
+
+    #video-player {
+      max-width: 100%;
+      max-height: 100%;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      box-shadow: 0 0 50px rgba(0,0,0,0.8);
+    }
+
+    #waiting-message {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      padding: 40px;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(10px);
+      border-radius: 24px;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+    }
+
+    #waiting-message.hidden {
+      display: none;
+    }
+
+    .waiting-icon {
+      font-size: 64px;
+      margin-bottom: 24px;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .waiting-text {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .waiting-subtext {
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    #controls {
+      background: linear-gradient(0deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%);
+      padding: 24px 32px;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    #controls.hidden {
+      opacity: 0;
+      transform: translateY(20px);
+      pointer-events: none;
+    }
+
+    .control-btn {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      padding: 14px 28px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .control-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.4);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+    }
+
+    .control-btn:active {
+      transform: translateY(0px) scale(0.98);
+    }
+
+    #video-info {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(10px);
+      padding: 16px 20px;
+      border-radius: 12px;
+      font-size: 14px;
+      display: none;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    }
+
+    #video-info.show {
+      display: block;
+    }
+
+    .info-item {
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .info-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .info-icon {
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <!-- ヘッダー情報 -->
+  <div id="header">
+    <div class="header-title">📺 VBR Screen</div>
+    <div class="server-info">
+      <div class="info-card">
+        <div class="info-label">📡 Status</div>
+        <div class="status-badge">
+          <span class="status-indicator"></span>
+          <span>待機中</span>
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="info-label">🌐 IP Address</div>
+        <div class="info-value" id="ip-address">---.---.---.---</div>
+      </div>
+      <div class="info-card">
+        <div class="info-label">🔌 HTTP Port</div>
+        <div class="info-value" id="http-port">----</div>
+      </div>
+      <div class="info-card">
+        <div class="info-label">⚡ WebSocket Port</div>
+        <div class="info-value" id="ws-port">----</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 動画コンテナ -->
+  <div id="video-container">
+    <video id="video-player" controls></video>
+
+    <div id="waiting-message">
+      <div class="waiting-icon">📱</div>
+      <div class="waiting-text">動画を待っています</div>
+      <div class="waiting-subtext">スマホアプリから動画を送信してください</div>
+    </div>
+  </div>
+
+  <!-- 動画情報 -->
+  <div id="video-info">
+    <div class="info-item">
+      <span class="info-icon">📄</span>
+      <span id="video-filename">---</span>
+    </div>
+    <div class="info-item">
+      <span class="info-icon">⏱</span>
+      <span id="video-duration">--:--</span>
+    </div>
+  </div>
+
+  <!-- コントロールボタン -->
+  <div id="controls" class="hidden">
+    <button class="control-btn" onclick="playVideo()">▶️ 再生</button>
+    <button class="control-btn" onclick="pauseVideo()">⏸ 一時停止</button>
+    <button class="control-btn" onclick="stopVideo()">⏹ 停止</button>
+    <button class="control-btn" onclick="toggleFullscreen()">⛶ フルスクリーン</button>
+  </div>
+
+  <script src="renderer.js"></script>
+  <script>
+    // UI操作用の関数
+    function playVideo() {
+      const video = document.getElementById('video-player');
+      video.play();
+    }
+
+    function pauseVideo() {
+      const video = document.getElementById('video-player');
+      video.pause();
+    }
+
+    function stopVideo() {
+      const video = document.getElementById('video-player');
+      video.pause();
+      video.currentTime = 0;
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    // 動画の時間フォーマット
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    // 動画プレイヤーのイベントリスナー
+    const video = document.getElementById('video-player');
+
+    video.addEventListener('loadedmetadata', () => {
+      const duration = document.getElementById('video-duration');
+      duration.textContent = formatTime(video.duration);
+    });
+
+    // マウス移動でUIを表示/非表示
+    let hideTimeout;
+    document.addEventListener('mousemove', () => {
+      const header = document.getElementById('header');
+      const controls = document.getElementById('controls');
+
+      header.classList.remove('hidden');
+      if (video.src) {
+        controls.classList.remove('hidden');
+      }
+
+      clearTimeout(hideTimeout);
+      hideTimeout = setTimeout(() => {
+        header.classList.add('hidden');
+        controls.classList.add('hidden');
+      }, 4000);
+    });
+  </script>
+</body>
+</html>

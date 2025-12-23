@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+
+# Uploads
+uploads/*.mp4
+uploads/*.avi
+uploads/*.mov
+uploads/*.webm
+
+# Keep uploads directory
+!uploads/.gitkeep
+
+# Build
+dist/
+build/
+
+# Electron
+out/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
