@@ -1,184 +1,79 @@
-# VBR Mobile Remote
+This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
 
-スマホから動画を選択して、Windows PCに送信し、リモコンのように再生制御するReact Nativeアプリです。  
-TensorFlow Liteによる背景除去機能も搭載しています。
+# Getting Started
 
-## 🎯 機能
+>**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
 
-- **Windows PCへの接続**: IPアドレス指定で接続
-- **動画ファイルの選択とアップロード**: 進捗表示付き
-- **WebSocketによるリアルタイム再生制御**: 再生/一時停止/停止
-- **背景除去**: TensorFlow Liteによる人物セグメンテーション
-- **IPアドレスの自動保存**: 次回起動時に自動入力
+## Step 1: Start the Metro Server
 
-## 🛠 技術スタック
+First, you will need to start **Metro**, the JavaScript _bundler_ that ships _with_ React Native.
 
-- React Native + Expo
-- TensorFlow Lite (react-native-fast-tflite)
-- axios (HTTP通信)
-- socket.io-client (WebSocket)
-- React Navigation (画面遷移)
-- AsyncStorage (データ保存)
-
-## 📦 必要要件
-
-- Node.js (v16以上)
-- npm
-- Android端末またはエミュレータ
-- Windows PC側の`vbr-screen`アプリが起動していること
-
-## 🚀 インストール
+To start Metro, run the following command from the _root_ of your React Native project:
 
 ```bash
-cd video-remote-app
-npm install
+# using npm
+npm start
+
+# OR using Yarn
+yarn start
 ```
 
-## ▶️ 起動方法
+## Step 2: Start your Application
 
-### 開発サーバー起動
+Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _root_ of your React Native project. Run the following command to start your _Android_ or _iOS_ app:
+
+### For Android
 
 ```bash
-npx expo start
+# using npm
+npm run android
+
+# OR using Yarn
+yarn android
 ```
 
-### Androidで起動
+### For iOS
 
 ```bash
-npx expo start --android
+# using npm
+npm run ios
+
+# OR using Yarn
+yarn ios
 ```
 
-### 実機で起動（Expo Goアプリ使用）
+If everything is set up _correctly_, you should see your new app running in your _Android Emulator_ or _iOS Simulator_ shortly provided you have set up your emulator/simulator correctly.
 
-1. スマホにExpo Goアプリをインストール
-2. `npx expo start` でQRコードを表示
-3. Expo GoアプリでQRコードをスキャン
+This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
 
-## 📱 使い方
+## Step 3: Modifying your App
 
-### 1. Windows PC側の準備
+Now that you have successfully run the app, let's modify it.
 
-1. `vbr-screen` (video-screen-app) を起動
-2. 画面に表示されるIPアドレスをメモ（例: 192.168.1.100）
+1. Open `App.tsx` in your text editor of choice and edit some lines.
+2. For **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Developer Menu** (<kbd>Ctrl</kbd> + <kbd>M</kbd> (on Window and Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (on macOS)) to see your changes!
 
-### 2. スマホアプリの操作
+   For **iOS**: Hit <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> in your iOS Simulator to reload the app and see your changes!
 
-1. アプリを起動
-2. **接続画面**でIPアドレスを入力
-3. 「接続テスト」ボタンで疎通確認
-4. 「接続開始」ボタンをタップ
-5. **リモコン画面**に移動
-6. 「動画を選択」で動画ファイルを選択
-7. 「PCに送信」でWindows PCに送信（進捗バー表示）
-8. 送信完了後、再生/一時停止/停止ボタンで制御
-9. 「背景除去」で背景白化機能を使用
+## Congratulations! :tada:
 
-## 🎨 背景除去機能
+You've successfully run and modified your React Native App. :partying_face:
 
-- **モデル**: DeepLab v3 (MobileNet v2 backbone)
-- **処理**: 人物領域を検出し、背景を白色に置換
-- **対応**: iOS/Android
+### Now what?
 
-## 📂 プロジェクト構成
+- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
+- If you're curious to learn more about React Native, check out the [Introduction to React Native](https://reactnative.dev/docs/getting-started).
 
-```
-video-remote-app/
-├── App.js                     # メインアプリ、ナビゲーション
-├── package.json               # プロジェクト設定
-├── app.json                   # Expo設定
-├── src/
-│   ├── screens/
-│   │   ├── ConnectionScreen.js        # 接続設定画面
-│   │   ├── RemoteScreen.js            # リモコン画面
-│   │   └── BackgroundRemovalScreen.js # 背景除去画面
-│   ├── services/
-│   │   └── TFLiteService.js           # TensorFlow Lite処理
-│   └── utils/
-│       ├── api.js                     # HTTP通信関数
-│       └── socket.js                  # WebSocket接続管理
-└── assets/
-    └── models/                        # TFLiteモデル
-```
+# Troubleshooting
 
-## 📄 ライセンス
+If you can't get this to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
 
-MIT License
+# Learn More
 
-## 👤 作成者
+To learn more about React Native, take a look at the following resources:
 
-Kaito <nktototon@gmail.com>
-
-- 進捗コールバック付き
-
-### WebSocket通信（socket.js）
-
-#### connect(ip)
-- WebSocketサーバーに接続
-- URL: `http://{ip}:3001`
-
-#### emitPlay() / emitPause() / emitStop()
-- 再生制御イベント送信
-
-## トラブルシューティング
-
-### 接続できない
-
-1. **同じWi-Fiに接続しているか確認**
-   - スマホとPCが同じネットワークにいる必要があります
-
-2. **Windowsのファイアウォール確認**
-   - ポート3000と3001が許可されているか確認
-
-3. **IPアドレスが正しいか確認**
-   - Windows PC側で表示されているIPと一致しているか
-
-### 動画がアップロードできない
-
-1. **動画ファイルのサイズ確認**
-   - 最大2GBまで対応
-
-2. **タイムアウト設定**
-   - 大容量ファイルは時間がかかります（5分のタイムアウト設定）
-
-3. **ネットワーク速度確認**
-   - Wi-Fi接続が安定しているか確認
-
-### WebSocketが切断される
-
-1. **サーバーの起動状態確認**
-   - Windows PC側のアプリが起動しているか
-
-2. **ネットワークの安定性**
-   - Wi-Fi接続が切れていないか
-
-## 開発者向け情報
-
-### デバッグログの確認
-
-開発中は以下のコマンドでログを確認できます：
-
-```bash
-npx expo start
-```
-
-コンソールにログが表示されます。
-
-### ビルド方法
-
-Android APKをビルド（Expo EAS Build使用）：
-
-```bash
-npx eas build --platform android
-```
-
-## 今後の拡張機能
-
-- [ ] シークバー（動画の任意の位置に移動）
-- [ ] 音量調整
-- [ ] 複数動画のプレイリスト
-- [ ] iOS対応
-- [ ] インターネット経由での接続（4桁コード）
-
-## ライセンス
-
-MIT
+- [React Native Website](https://reactnative.dev) - learn more about React Native.
+- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
+- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
+- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
+- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
