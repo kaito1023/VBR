@@ -19,3 +19,25 @@ buildscript {
 }
 
 apply plugin: "com.facebook.react.rootproject"
+// 自動的にlocal.propertiesを生成
+def localPropertiesFile = file('local.properties')
+if (!localPropertiesFile.exists()) {
+    def sdkDir = System.getenv("ANDROID_HOME") ?: System.getenv("ANDROID_SDK_ROOT")
+    if (sdkDir == null) {
+        // デフォルトのAndroid SDK パスを試行
+        def possiblePaths = [
+            System.getProperty("user.home") + "/AppData/Local/Android/Sdk",
+            System.getProperty("user.home") + "/Library/Android/sdk",
+            System.getProperty("user.home") + "/Android/Sdk"
+        ]
+        sdkDir = possiblePaths.find { new File(it).exists() }
+    }
+    
+    if (sdkDir != null) {
+        localPropertiesFile.text = "sdk.dir=${sdkDir.replace('\\', '\\\\')}\n"
+        println(" local.properties created with SDK: ${sdkDir}")
+    } else {
+        throw new GradleException(" Android SDK not found. Please set ANDROID_HOME or ANDROID_SDK_ROOT environment variable.")
+    }
+}
+

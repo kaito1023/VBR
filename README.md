@@ -1,259 +1,199 @@
-# VBR - Video Background Removal & Remote Control
+﻿#  VBR - Video Background Removal
 
-統合されたビデオ背景除去・リモート操作アプリケーション
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![React Native](https://img.shields.io/badge/React%20Native-0.76.6-blue)](https://reactnative.dev/)
+[![Electron](https://img.shields.io/badge/Electron-28.0-blue)](https://www.electronjs.org/)
 
-## 概要
+リモート制御で動画背景除去を行うアプリケーション統合プロジェクト
 
-VBRは、動画の背景除去とリモート操作機能を統合したアプリケーションです。
-Windows PC用のデスクトップアプリとスマートフォン用のモバイルアプリの2つで構成されています。
+---
 
-## プロジェクト構成
+##  クイックスタート（Android Studio）
+
+###  完全自動化版（推奨）
+
+```bash
+# 1. リポジトリをクローン
+git clone https://github.com/kaito1023/VBR.git
+
+# 2. Android Studioで開く
+# File  Open  VBR/video-remote-app/android
+
+# 3. USBデバッグを有効にした端末を接続
+
+# 4. Run  ボタンをクリック
+```
+
+**これだけです！** 以下が自動で実行されます：
+-  `npm install` の自動実行
+-  `local.properties` の自動生成
+-  Metro Bundlerの自動起動
+-  アプリのビルドとインストール
+
+---
+
+##  プロジェクト構成
 
 ```
 VBR/
-├── README.md                    # このファイル
-├── .gitignore                   # Git除外設定
-├── package.json                 # デスクトップアプリの依存関係
-├── main.js                      # Electronメインプロセス
-├── index.html                   # デスクトップアプリのUI
-├── renderer.js                  # デスクトップアプリのロジック
-├── uploads/                     # アップロードされた動画
-├── processed/                   # 処理済み動画
-├── mobile-app/                  # スマートフォンアプリ
-│   ├── README.md               # モバイルアプリのドキュメント
-│   ├── package.json            # モバイルアプリの依存関係
-│   ├── App.js                  # メインアプリケーション
-│   ├── app.json                # Expo設定
-│   ├── eas.json                # ビルド設定
-│   └── src/
-│       └── screens/            # 各画面コンポーネント
-├── video-remote-app/            # 元のリモコンアプリ（参考用）
-├── video-screen-app/            # 元のスクリーンアプリ（参考用）
-└── VideoBackgroundRemoval-main/ # 元の背景除去アプリ（参考用）
+ video-remote-app/           # React Nativeモバイルアプリ
+    android/                #  Android Studioで開くフォルダ
+       app/build.gradle    # 自動化スクリプト追加済み
+       build.gradle        # local.properties自動生成
+    src/                    # アプリソースコード
+    App.js                  # エントリーポイント
+    package.json
+ video-screen-app/           # Electron Windowsアプリ
+    index.html
+    main.js
+    package.json
+ VideoBackgroundRemoval-main/ # 参考用Androidプロジェクト
 ```
 
-## アプリケーション
+---
 
-### 1. デスクトップアプリ（Windows PC）
+##  アプリの機能
 
-Electronベースのデスクトップアプリケーション
+###  モバイルアプリ（video-remote-app）
 
-**機能:**
-- 動画の受信と再生
-- リモート操作の受信
-- 背景除去処理
-- WebSocketサーバー
+1. **接続画面** 
+   - Windows画面アプリのIPアドレスを設定
+   - 接続状態の確認
 
-**起動方法:**
+2. **リモート画面** 
+   - 動画のアップロード（最大2GB）
+   - 再生/一時停止/停止コントロール
+   - リアルタイム操作
+
+3. **背景除去画面** 
+   - TensorFlow Lite統合予定
+   - 画像選択機能実装済み
+
+###  Windows画面アプリ（video-screen-app）
+
+- Socket.IOで動画受信
+- フルスクリーン表示
+- リモートコントロール対応
+
+---
+
+##  手動セットアップ（トラブル時）
+
+自動化が失敗した場合のみ実行：
+
 ```bash
+# 1. リポジトリをクローン
+git clone https://github.com/kaito1023/VBR.git
+cd VBR/video-remote-app
+
+# 2. 依存関係をインストール
+npm install
+
+# 3. Metro Bundlerを起動（別ターミナル）
+npm start
+
+# 4. Android Studioで実行
+# video-remote-app/android/ を開く
+# Run 
+```
+
+---
+
+##  Android端末の準備
+
+### USBデバッグの有効化
+
+1. **設定**  **端末情報**  **ビルド番号**を7回タップ
+2. **設定**  **開発者向けオプション**  **USBデバッグ**をON
+3. USBケーブルでPCと接続
+4. 「USBデバッグを許可しますか？」 **許可**
+
+---
+
+##  トラブルシューティング
+
+###  "SDK location not found"
+
+自動生成に失敗した場合、手動で作成：
+
+```bash
+cd VBR/video-remote-app/android
+echo "sdk.dir=C:\\Users\\YOUR_USERNAME\\AppData\\Local\\Android\\Sdk" > local.properties
+```
+
+###  Metro Bundler起動しない
+
+手動で起動：
+
+```bash
+cd VBR/video-remote-app
+npm start
+```
+
+###  "Gradle sync failed"
+
+キャッシュをクリア：
+
+```bash
+cd VBR/video-remote-app/android
+.\gradlew clean
+```
+
+Android Studio:
+```
+File  Invalidate Caches  Invalidate and Restart
+```
+
+###  端末が認識されない
+
+```bash
+adb devices  # 端末確認
+adb kill-server
+adb start-server
+```
+
+---
+
+##  Windows画面アプリの起動
+
+```bash
+cd VBR/video-screen-app
 npm install
 npm start
 ```
 
-詳細は [README.md](README.md) の「統合元のアプリケーション」セクションを参照
+---
 
-### 2. モバイルアプリ（Android/iOS）
+##  開発情報
 
-React Native（Expo）ベースのスマートフォンアプリ
+- **Package Name**: `com.kaito1023.vbr`
+- **React Native**: 0.76.6
+- **Node.js**: 18以上推奨
+- **Electron**: 28.0
 
-**機能:**
-- カメラでの動画撮影
-- 背景除去処理
-- PCへのリモート接続と操作
-- 設定管理
+---
 
-**起動方法:**
-```bash
-cd mobile-app
-npm install
-npm start
-```
+##  ライセンス
 
-詳細は [mobile-app/README.md](mobile-app/README.md) を参照
+MIT License - 詳細は [LICENSE](LICENSE) を参照
 
-## 主な機能
+---
 
-### 🎮 リモートコントロール
-- スマートフォンからの動画アップロード
-- WebSocket による リアルタイム再生制御
-- 再生 / 一時停止 / 停止コントロール
+##  コントリビューション
 
-### 🖥️ ビデオスクリーン
-- HTTP サーバーで動画ファイルを受信（ポート 3000）
-- WebSocket サーバーで制御コマンドを受信（ポート 3001）
-- シンプルで美しい UI デザイン
+詳細は [CONTRIBUTING.md](CONTRIBUTING.md) を参照
 
-### 🎨 背景除去
-- リアルタイム背景除去処理
-- カスタマイズ可能な背景色（白 / 黒 / グリーン）
-- 閾値調整スライダー
+---
 
-## 技術スタック
+##  ドキュメント
 
-- **Electron** - デスクトップアプリケーションフレームワーク
-- **Express** - HTTP サーバー
-- **Socket.IO** - WebSocket 通信
-- **Canvas API** - ビデオ処理
+- [Android Studioセットアップガイド](ANDROID_STUDIO_GUIDE.md)
+- [セットアップ手順](SETUP.md)
 
-## インストール
+---
 
-```bash
-cd VBR
-npm install
-```
+##  作成者
 
-## 起動方法
-
-### 通常起動
-```bash
-npm start
-```
-
-### デバッグモード（DevTools を開く）
-```bash
-npm run dev
-```
-
-## 使い方
-
-### 1. アプリケーション起動
-アプリを起動すると、画面左サイドバーに以下の情報が表示されます：
-- **IP Address**: ローカルネットワークの IP アドレス
-- **HTTP Port**: 3000
-- **WebSocket Port**: 3001
-
-### 2. スマートフォンからの接続
-スマートフォンアプリから表示された IP アドレスに接続します：
-- 接続先: `http://[表示されたIP]:3000`
-
-### 3. 動画のアップロード
-スマートフォンアプリから動画を送信すると、自動的に読み込まれます。
-
-### 4. リモートコントロール
-**リモコンタブ**で以下の操作が可能：
-- ▶ 再生
-- ⏸ 一時停止
-- ⏹ 停止
-
-### 5. 背景除去
-**背景除去タブ**で以下の設定が可能：
-1. 閾値スライダーで感度を調整
-2. 「背景除去を有効化」ボタンをクリック
-3. 背景色を選択（白 / 黒 / グリーン）
-
-## API 仕様
-
-### HTTP エンドポイント
-
-#### `GET /health`
-ヘルスチェック
-
-**レスポンス:**
-```json
-{
-  "status": "ok",
-  "timestamp": "2025-12-22T00:00:00.000Z"
-}
-```
-
-#### `POST /upload-video`
-動画ファイルをアップロード
-
-**リクエスト:**
-- Content-Type: `multipart/form-data`
-- フィールド名: `video`
-- 最大サイズ: 2GB
-
-**レスポンス:**
-```json
-{
-  "success": true,
-  "videoId": "video_1234567890",
-  "filename": "video_1234567890.mp4",
-  "path": "/uploads/video_1234567890.mp4",
-  "size": 12345678
-}
-```
-
-### WebSocket イベント
-
-#### `play`
-動画を再生
-```javascript
-socket.emit('play');
-```
-
-#### `pause`
-動画を一時停止
-```javascript
-socket.emit('pause');
-```
-
-#### `stop`
-動画を停止して最初に戻す
-```javascript
-socket.emit('stop');
-```
-
-#### `seek`
-動画の再生位置を変更
-```javascript
-socket.emit('seek', { time: 10.5 });
-```
-
-## プロジェクト構造
-
-```
-VBR/
-├── package.json              # プロジェクト設定
-├── main.js                   # Electron メインプロセス
-├── index.html                # UI レイアウト
-├── renderer.js               # レンダラープロセス（UI ロジック）
-├── README.md                 # このファイル
-├── uploads/                  # アップロードされた動画
-├── processed/                # 処理済み動画
-├── video-remote-app/         # 元のリモコンアプリ（参考用）
-├── video-screen-app/         # 元のスクリーンアプリ（参考用）
-└── VideoBackgroundRemoval-main/  # 元の背景除去アプリ（参考用）
-```
-
-## 統合元のアプリケーション
-
-このアプリは以下の3つのアプリケーションを統合しています：
-- `video-remote-app` - React Native (Expo) スマホアプリ
-- `video-screen-app` - Electron デスクトップアプリ
-- `VideoBackgroundRemoval-main` - Android 背景除去アプリ
-
-## スマートフォンアプリとの連携
-
-スマートフォン側のアプリケーション（`video-remote-app`）を使用する場合：
-
-1. `video-remote-app` フォルダに移動
-2. `npm install` でインストール
-3. `npx expo start` で起動
-4. Expo Go アプリで QR コードをスキャン
-5. 表示された IP アドレスを入力して接続
-
-## 開発
-
-### 依存関係の追加
-```bash
-npm install [パッケージ名]
-```
-
-### ビルド
-```bash
-npm run build
-```
-
-## ライセンス
-
-MIT
-
-## 作成者
-
-Kaito
-
-## バージョン
-
-1.0.0
+**kaito1023**
+- GitHub: [@kaito1023](https://github.com/kaito1023)
+- Email: nktototon@gmail.com

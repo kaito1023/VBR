@@ -54,6 +54,36 @@ react {
     autolinkLibrariesWithApp()
 }
 
+// 自動的にnpm installを実行
+task installNodeModules(type: Exec) {
+    description = 'Install node modules'
+    workingDir = file("${projectDir}/../..")
+    if (System.getProperty('os.name').toLowerCase().contains('windows')) {
+        commandLine 'cmd', '/c', 'npm', 'install'
+    } else {
+        commandLine 'npm', 'install'
+    }
+}
+
+// Metro Bundlerを起動
+task startMetroBundler(type: Exec) {
+    description = 'Start Metro Bundler'
+    workingDir = file("${projectDir}/../..")
+    if (System.getProperty('os.name').toLowerCase().contains('windows')) {
+        commandLine 'cmd', '/c', 'start', 'cmd', '/k', 'npm start'
+    } else {
+        commandLine 'sh', '-c', 'npm start &'
+    }
+    ignoreExitValue = true
+}
+
+// ビルド前に依存関係をインストール
+preBuild.dependsOn installNodeModules
+// デバッグビルド時はMetro Bundlerを起動
+afterEvaluate {
+    assembleDebug.dependsOn startMetroBundler
+}
+
 /**
  * Set this to true to Run Proguard on Release builds to minify the Java bytecode.
  */
@@ -117,4 +147,5 @@ dependencies {
         implementation jscFlavor
     }
 }
+
 
