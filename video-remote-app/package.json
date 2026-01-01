@@ -1,6 +1,13 @@
 ﻿{
   "name": "vbr-mobile",
-  "version": "1.0.0", "description": "Video Background Removal - Mobile Remote Control App", "repository": { "type": "git", "url": "https://github.com/kaito1023/VBR.git" }, "author": "kaito1023 <nktototon@gmail.com>", "license": "MIT",
+  "version": "1.0.0",
+  "description": "Video Background Removal - Mobile Remote Control App",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kaito1023/VBR.git"
+  },
+  "author": "kaito1023 <nktototon@gmail.com>",
+  "license": "MIT",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -45,4 +52,3 @@
     "node": ">=18"
   }
 }
-
